@@ -3,6 +3,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Checkbox } from 'antd';
 import './login.less'
 import logo from './images/logo.png'
+import  { reqLogin } from '../../api' //默认暴露不要写{},指定暴露(分别暴露)用解构{}
 
 /* 登陆的路由组件*/
 const Item = Form.Item //不能写在import之前
