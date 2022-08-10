@@ -1,41 +1,54 @@
 import React, {Component} from 'react'
+import {Navigate} from 'react-router-dom'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Checkbox } from 'antd';
+import { Button, Form, Input, Checkbox, message } from 'antd';
 import './login.less'
-import logo from './images/logo.png'
+import logo from '../../assets/images/logo.png'
 import  { reqLogin } from '../../api' //默认暴露不要写{},指定暴露(分别暴露)用解构{}
-
-/* 登陆的路由组件*/
+import memoryUtils from '../../utils/memoryUtils'
+import storageUtils from '../../utils/storageUtils'
+/* 登陆的路由组件*/ 
 const Item = Form.Item //不能写在import之前
-const onFinish = (values) => {
-    console.log(values)
-}
 export default class Login extends Component {
+    onFinish = async (values) => {     
+        const {username, password} = values
+        const response= await reqLogin(username, password)
+        //console.log('成功了', response.data)
+        //{status:0, data: user} {status:0, msg: 'xxx'}
+        if (response.status ===0) {
+            //显示登录成功
+            message.success('登录成功')
 
-    handleSubmit = (event) => {
-        event.preventDefault()
-    }
-    onFinish = (values) => {
-        console.log(values)
-    }
-
+            const user=response.data
+            memoryUtils.user=user//保存在内存中
+            storageUtils.saveUser(user)//保存在本地中
+            //跳转到管理界面(不需要再回退回来)
+        } else {
+            message.error(response.msg)
+        }
+        };
     validator = (rule, value, callback) => {
         if (!value) {
             //callback如果不传参说明校验成功，如果传参说明校验失败，并且会提示错误信息
-            callback('Please input your Username!')
+            return Promise.reject('Please input your Username!')
         } else if (value.length<4) {
-            callback('The user name must be greater than 4.')
+            return Promise.reject('The user name must be greater than 4.')
         } else if (value.length>12) {
-            callback('The user name must be smaller than 12.')
+            return Promise.reject('The user name must be smaller than 12.')
         } else if (! /^[a-zA-Z0-9_]+$/.test(value)) {
-            callback('The username must be an alphabetic character, an array, or an underscore.')
+            return Promise.reject('The username must be an alphabetic character, an array, or an underscore.')
         } else {
-            callback() //必须调用
+            return Promise.resolve() //必须调用
         }
         
     }
 
     render() {
+        //如果用户已经登陆，自跳转到管理界面
+        const user=memoryUtils.user
+        if(user&&user._id) {
+            return <Navigate to='/'/>
+        }
         return (
             <div className='login' >
                 <header className='login-header'>
@@ -49,7 +62,7 @@ export default class Login extends Component {
                         name="normal_login" 
                         className="login-form" 
                         initialValues={{ remember: true, }}
-                        onFinish={onFinish}>
+                        onFinish={this.onFinish}>
                         <Item 
                         name="username" 
                         rules={[//内置验证规则进行声明式验证
@@ -108,4 +121,17 @@ export default class Login extends Component {
 1.前台表单验证
 2.收集表单数据收集
 
+*/
+/*
+async and await
+await 等待返回数据
+async 写在函数旁边
+1.作用
+简化promise对象的作用，不再使用.then()来指定成功/失败的回调函数
+以同步编码方式实现异步流程
+2.哪里写await
+先确定await 在返回promise的表达式左侧
+不想要promise，想要promise异步执行的成功的value数据
+3.async
+await所在最近的所在函数定义的走册
 */

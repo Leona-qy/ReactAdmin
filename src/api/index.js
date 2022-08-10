@@ -15,3 +15,4 @@ export const reqLogin = (username, password) => ajax('/login', {username,passwor
 
 //添加用户
 export const reqAddUser = (user) => ajax('/manage/user/add', user, 'POST')
+ 
