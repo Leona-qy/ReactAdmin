@@ -17,7 +17,7 @@ import Product from "../product/product";
 const { Footer, Sider, Content } = Layout;
 /* 后台的路由组件*/
 
-export default class Login extends Component {
+export default class Admin extends Component {
     render() {
         const user=memoryUtils.user
         //如果内存没存储user==>当前没登陆
@@ -27,12 +27,15 @@ export default class Login extends Component {
         }
         return (
             <Layout style={{height: '100%'}}>
-                <Sider>
+                <Sider 
+                    style={{
+                    
+                  }}>
                     <LeftNav></LeftNav>
                 </Sider>
                 <Layout>
                     <Header>Header</Header>
-                    <Content style={{backgroundColor: '#fff'}}>
+                    <Content style={{margin: 20, backgroundColor: '#fff'}}>
                         <Routes>
                             <Route path="/home" element={Home} />
                             <Route path="/category" element={Category} />
@@ -42,8 +45,8 @@ export default class Login extends Component {
                             <Route path="/charts/bar" element={Bar} />
                             <Route path="/charts/line" element={Line} />
                             <Route path="/charts/pie" element={Pie} />
-                            <Navigate to='/home'></Navigate>
-                        </Routes>
+                            <Route path='*' element={Home}></Route>
+                        </Routes>                      
                     </Content>
                     <Footer style={{textAlign: 'center', color: '#ccc'}}>推荐使用谷歌浏览器，可以获得更加页面操作体验</Footer>
                 </Layout>
