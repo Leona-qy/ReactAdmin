@@ -1,5 +1,7 @@
 import React, {Component} from 'react'
 import withRouter from '../../utils/withRouter'
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import storageUtils from '../../utils/storageUtils'
 import './index.less'
 import { formateDate } from '../../utils/dateUtils'
 import memoryUtils from '../../utils/memoryUtils'
@@ -7,6 +9,7 @@ import { reqWeather } from '../../api'
 import menuList from '../../config/menuConfig'
 import { Modal, Button } from 'antd';
 
+const {confirm}=Modal
 class Header extends Component {
     state = { 
         currentTime : formateDate(Date.now()),//当前时间字符串
@@ -44,6 +47,26 @@ class Header extends Component {
         })
         return title
     }
+
+
+    /*
+    退出登录
+    */
+   logout = () => {
+    confirm ({
+      title: '确定退出吗?',
+      icon: <ExclamationCircleOutlined />,
+      // content: 'Some descriptions',
+      onOk : ()=> {
+        // 清除用户
+        storageUtils.removeUser()
+        // 跳转到登录界面
+        this.props.navigate('/login')
+      }, 
+      onCancel() {
+      },
+    })
+   }
     //循环定时器一个异步行为
     /*
     第一次render后执行一次
@@ -55,6 +78,13 @@ class Header extends Component {
     this.getWeather()
    }
 
+   /*
+   当前组件卸载之前调用
+   */
+  componentWillUnmount () {
+    clearInterval(this.intervalId)
+  }
+
     render() {
         const {currentTime, dayPictureUrl,weather}=this.state
         const username= memoryUtils.user.userName
@@ -63,7 +93,7 @@ class Header extends Component {
             <div className='header'>
                 <div className='head-top'>
                     <span>欢迎,admin</span>
-                    <a href="javascript:" onClick={this.logout}>退出</a>
+                    <Button type="text" onClick={this.logout}>退出</Button>
                 </div>
                 <div className="head-bottom">
                     <div className="head-bottom-left">{this.getTitle()}</div>
